@@ -1,8 +1,10 @@
 Description  
 ===================================================================   
-A server application that allows two clients to connect to it. The  
+A server application that allows two clients to connect to it. If  
+needed, the application can connect to another (remote) server. The  
 packets sent from the first client are sent to the second and vice  
- versa.  
+ versa. If a remote server is used, the last client that sent any  
+ data is the client that currently holds the communication link.  
 
 INSTALL  
 ===================================================================
@@ -49,7 +51,7 @@ press build.
                |        |  |  USED  |   |        
                |        |  |  MUX   |   |        
                |        |  |        |   |        
-    CLIENT 1   |------->|--|        |   |
+    CLIENT 2   |------->|--|        |   |
                |<-------|<-|        |   |
                |        |  ----------   |        
                |        |    CLIENT     |        
@@ -100,8 +102,8 @@ then the tcp_bridge in client mode (version >= 1.4) with the -c argument:
 
 then connect two clients from two separate terminals:  
 
-nc 127.0.0.1 1212
-nc 127.0.0.1 1212
+nc 127.0.0.1 1212  
+nc 127.0.0.1 1212  
 
 The messages from the server will be re-routed (multiplexed, MUX) to the  
 last client that send a message to the server.  
