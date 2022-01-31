@@ -12,7 +12,7 @@ press build.
   
 <pre>  
 ----------------        -----------------        -----------------
-               |        |    SERVER     |        |               |
+               |        |  HOST SERVER  |        |               |
                |        |  (tcp_bridge) |        |               |
                |        |               |        |               |
     CLIENT 1   |------->|-------------->|------->|  CLIENT 2     |
@@ -22,10 +22,48 @@ press build.
 ----------------        -----------------        -----------------
 </pre>  
 
+<pre>  
+----------------        -----------------        -----------------
+               |        |  HOST SERVER  |        | REMOTE SERVER |
+               |        |  (tcp_bridge) |        |               |
+               |        |  ----------   |        |               |
+    CLIENT 1   |------->|--|        |-->|------->|               |
+               |<-------|<-|        |---|<-------|               |
+               |        |  ----------   |        |               |
+               |        |    CLIENT     |        |               |
+----------------        -----------------        -----------------
+</pre>  
+
+<pre>  
+----------------        -----------------        -----------------
+               |        |  HOST SERVER  |        | REMOTE SERVER |
+               |        |  (tcp_bridge) |        |               |
+               |        |  ----------   |        |               |
+    CLIENT 1   |------->|--|        |-->|------->|               |
+               |<-------|<-|        |---|<-------|               |
+               |        |  |        |   |        |               |
+               |        |  |        |   |        |               |
+----------------        |  |        |   |        -----------------
+                        |  |  LAST  |   |
+----------------        |  |  ONE   |   |
+               |        |  |  USED  |   |        
+               |        |  |  MUX   |   |        
+               |        |  |        |   |        
+    CLIENT 1   |------->|--|        |   |
+               |<-------|<-|        |   |
+               |        |  ----------   |        
+               |        |    CLIENT     |        
+----------------        -----------------
+
+
+</pre>  
+
 
 
 Example usage  
 ===================================================================
+**EXAMPLE 1:**  
+==============  
 Go to the tcp_bridge build directory and type:  
 
 ./tcp_bridge -i localhost -p 1234  
@@ -49,5 +87,25 @@ the other remains connected to the server. If you want to disconnect
 both clients when one of them closes the connection issue the command  
 
 ./tcp_bridge -i localhost -p 1234 -d  
+  
+**EXAMPLE 2:**  
+==============  
+Start a "remote" server:  
+
+nc 127.0.0.1 5533 -l  
+
+then the tcp_bridge in client mode (version >= 1.4) with the -c argument:  
+
+./tcp_bridge -i 127.0.0.1 -p 1212 -c -r 127.0.0.1 -o 5533 -d  
+
+then connect two clients from two separate terminals:  
+
+nc 127.0.0.1 1212
+nc 127.0.0.1 1212
+
+The messages from the server will be re-routed (multiplexed, MUX) to the  
+last client that send a message to the server.  
+
+
 
 
